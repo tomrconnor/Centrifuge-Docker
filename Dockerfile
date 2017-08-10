@@ -1,12 +1,31 @@
 FROM ubuntu:16.04
 MAINTAINER Paul Manninger, paul.manninger@inspection.gc.ca
 
-RUN apt-get update && apt-get install -y \
-		wget \
-		zip  \
+#Environmental Variables/Paths
+#ENV DEBIAN_FRONTEND interactive
+ENV PATH="/centrifuge/:${PATH}"
+ENV PATH="/ncbi-blast/bin:${PATH}"
+ENV TERM=xterm
+
+RUN apt-get update -y -qq
+RUN apt-get install -y build-essential
+RUN apt-get install -y wget 
+RUN apt-get install -y zip
+RUN apt-get install -y bash
 		
-RUN \
-wget ftp://ftp.ccb.jhu.edu/pub/infphilo/centrifuge/downloads/centrifuge-1.0.3-beta-source.zip
-unzip centrifuge-1.0.3-beta-source.zip
-cd centrifuge-1.0.3-beta
-make USE_SRA=1 NCBI_NGS_DIR=~/centrifuge-1.0.3-beta/NCBI-NGS NCBI_VDB_DIR=~/centrifuge-1.0.3-beta/NCBI-NGS
+#Download Centrifuge
+RUN wget ftp://ftp.ccb.jhu.edu/pub/infphilo/centrifuge/downloads/centrifuge-1.0.3-beta-Linux_x86_64.zip
+RUN unzip centrifuge-1.0.3-beta-Linux_x86_64.zip -d /
+RUN mv centrifuge-1.0.3-beta centrifuge
+RUN rm centrifuge-1.0.3-beta-Linux_x86_64.zip
+
+#Download NCBI-Blast - Required for centrifuge-download
+RUN wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-2.6.0+-x64-linux.tar.gz
+RUN tar -xvzf ncbi-blast-2.6.0+-x64-linux.tar.gz
+RUN mv ncbi-blast-2.6.0+ ncbi-blast
+RUN rm ncbi-blast-2.6.0+-x64-linux.tar.gz
+
+#Centrifuge Indexes
+RUN export TERMINFO=/usr/lib/terminfo
+RUN centrifuge-download -o taxonomy taxonomy
+RUN centrifuge-download -o library -m -d "bacteria" refseq > seqid2taxid.map
