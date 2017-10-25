@@ -21,10 +21,10 @@ RUN mv centrifuge-1.0.3-beta centrifuge
 RUN rm centrifuge-1.0.3-beta-Linux_x86_64.zip
 
 #Download NCBI-Blast - Required for centrifuge-download
-RUN wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-2.6.0+-x64-linux.tar.gz
-RUN tar -xvzf ncbi-blast-2.6.0+-x64-linux.tar.gz
-RUN mv ncbi-blast-2.6.0+ ncbi-blast
-RUN rm ncbi-blast-2.6.0+-x64-linux.tar.gz
+RUN wget ftp://ftp.ncbi.nlm.nih.gov/blast/executables/blast+/LATEST/ncbi-blast-2.7.0+-x64-linux.tar.gz
+RUN tar -xvzf ncbi-blast-2.7.0+-x64-linux.tar.gz
+RUN mv ncbi-blast-2.7.0+ ncbi-blast
+RUN rm ncbi-blast-2.7.0+-x64-linux.tar.gz
 
 #Centrifuge Indexes
 RUN export TERMINFO=/usr/lib/terminfo
@@ -33,7 +33,5 @@ RUN centrifuge-download -o library -m -d "bacteria" refseq > seqid2taxid.map
 
 #Build Index
 RUN cat library/*/*.fna > input-sequences.fna
-## build centrifuge index with 4 threads
-centrifuge-build -p 4 --conversion-table seqid2taxid.map \
-                 --taxonomy-tree taxonomy/nodes.dmp --name-table taxonomy/names.dmp \
-                 input-sequences.fna abv
+# build centrifuge index with 4 threads
+RUN centrifuge-build -p 10 --conversion-table seqid2taxid.map --taxonomy-tree taxonomy/nodes.dmp --name-table taxonomy/names.dmp input-sequences.fna abv
