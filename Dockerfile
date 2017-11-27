@@ -13,6 +13,7 @@ RUN apt-get install -y wget
 RUN apt-get install -y zip
 RUN apt-get install -y bash
 RUN apt-get install -y python
+RUN apt-get install -y nano
 		
 #Download Centrifuge
 RUN wget ftp://ftp.ccb.jhu.edu/pub/infphilo/centrifuge/downloads/centrifuge-1.0.3-beta-Linux_x86_64.zip
